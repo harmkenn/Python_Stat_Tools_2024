@@ -1,11 +1,14 @@
 import streamlit as st
 from multiapp import MultiApp
-from apps import a_quant # import your app modules here
+from apps import a_quant, b_discrete, c_normal, d_proportions # import your app modules here
 st.set_page_config(layout="wide")
 app = MultiApp()
 
 # Add all your application here
 app.add_app("Quantitative Stats", a_quant.app)
+app.add_app("Discrete Probability", b_discrete.app)
+app.add_app("Normal Probability", c_normal.app)
+app.add_app("Proportions", d_proportions.app)
 
 # The main app
 app.run()
