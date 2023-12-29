@@ -4,6 +4,8 @@ import scipy as sp
 import numpy as np
 import plotly_express as px
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
+import pingouin as pg
 
 
 
@@ -66,13 +68,17 @@ def app():
            st.plotly_chart(fig, use_container_width=True)   
             
         if lr_graph == "Residual QQPlot":
-            
-            zy = (fsdf['resid']-fsdf['resid'].mean())/fsdf['resid'].std()
-            fig = sm.qqplot(zy, line='45')
-            st.plotly_chart(fig, use_container_width=True)   
-            
+            fig, ax = plt.subplots()
+            ax = pg.qqplot(fsdf['resid'], dist='norm', confidence=.95)       
+            # Add labels and title
+            ax.set_xlabel('Theoretical Quantiles')
+            ax.set_ylabel('Sample Quantiles')
+            ax.set_title('QQ-Plot with Confidence Interval Bands')
+            st.pyplot(fig, use_container_width=True)   
+
             ddd = sp.stats.shapiro(fsdf['resid'])[1]
-            st.write("Shapiro p-Value: " + str(ddd))    
+            st.write("Shapiro p-Value: " + str(ddd))            
+
     with d2:
         gx =  float(st.text_input("Given X:",0)) 
         if xvar != yvar:
