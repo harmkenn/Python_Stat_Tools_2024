@@ -6,9 +6,9 @@ import plotly_express as px
 
 def app():
     # title of the app
-    st.markdown("Student t Probability")
-    st.sidebar.subheader("t Settings")
-    t_choice = st.sidebar.radio("",["t to Probability","Probability to t"])
+    #st.markdown("Student t Probability")
+    #st.sidebar.subheader("t Settings")
+    t_choice = st.radio("",["t to Probability","Probability to t"])
     
     if t_choice == "t to Probability":
         c2,c3,c4 = st.columns(3)

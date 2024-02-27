@@ -7,9 +7,9 @@ import numpy as np
 
 def app():
     # title of the app
-    st.markdown("Normal Probaility")
-    st.sidebar.subheader("Normal Settings")
-    norm_choice = st.sidebar.radio("",["z to Probability","Probability to z"])
+    #st.markdown("Normal Probaility")
+    #st.sidebar.subheader("Normal Settings")
+    norm_choice = st.radio("",["z to Probability","Probability to z"])
 
     if norm_choice == "z to Probability":
         c2,c3,c4 = st.columns(3)

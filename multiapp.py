@@ -1,6 +1,7 @@
 """Frameworks for running multiple Streamlit applications as a single app.
 """
 import streamlit as st
+import pandas as pd
 
 class MultiApp:
 
@@ -23,10 +24,17 @@ class MultiApp:
 
     def run(self):
 
-        st.sidebar.title("Python Stat Tools v2024.1")
+        st.sidebar.title("Python Stat Tools v2024.2")
         st.sidebar.subheader("by Ken Harmon")
-        st.session_state.gs_URL = st.sidebar.text_input("Public Google Sheet URL:","https://docs.google.com/spreadsheets/d/1tuQPjJbLV9e2F1abxs2HVJsZO0xaitc9KtcKJD1acXQ/edit#gid=182521220") 
-               
+        
+
+
+        # Input box for file path
+        st.session_state.xlsx = st.sidebar.text_input("Enter the path to your .xlsx file:",r"PythonStatsData.xlsx")
+
+        st.sidebar.download_button(label="Download Default Excel File", data=open("PythonStatsData.xlsx", "rb").read(), file_name="PythonStatsData.xlsx")
+
+           
         app = st.sidebar.radio(
             '',
             self.apps,

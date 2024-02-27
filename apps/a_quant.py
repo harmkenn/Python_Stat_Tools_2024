@@ -8,25 +8,34 @@ import pingouin as pg
 
 def app():
     # title of the app
-    st.markdown("Quantitative Stats")
+    #st.markdown("Quantitative Stats")
     # Add a sidebar
-    st.sidebar.subheader("Graph Settings")
     
     top = st.columns((1,1))
     bottom = st.columns(1)
     with top[0]:
-        gs_URL = st.session_state.gs_URL
-        googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-        worksheetName = st.text_input("Sheet Name:","Bivariate")
-        URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'
-    
+        def display_data(file_path, selected_sheet):
+            try:
+                # Read data from the specified file path and sheet
+                df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                
+            except FileNotFoundError:
+                st.error("File not found. Please check the path and try again.")
+            except (KeyError, ValueError):
+                st.error(f"Sheet '{selected_sheet}' not found in the file.")
+        # Dropdown menu for sheet selection
+        sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+        st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=0)
+         
 
-        if st.button('Refresh'):
-            df = pd.read_csv(URL)
-            df = df.dropna(axis=1, how="all")      
-    df = pd.read_csv(URL)
-    df = df.dropna(axis=1, how="all") 
-       
+        # Button to refresh data
+        if st.button("Refresh Data"):
+            display_data(st.session_state.xlsx, st.session_state.sheet)               
+        df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
+
+
+
+
     global numeric_columns
     global non_numeric_columns
     try:
@@ -38,10 +47,8 @@ def app():
         print(e)
         st.write("Please upload file to the application.")
             
-    # add a select widget to the side bar
-    chart_choice = st.sidebar.radio("",["Histogram","Boxplot & Dotplot","QQplot","Scatterplot"])
-    
-    
+    with top[1]:
+        chart_choice = st.radio("",["Histogram","Boxplot & Dotplot","QQplot","Scatterplot"])
     if chart_choice == "Histogram":
         with top[1]:
             x = st.selectbox('X-Axis', options=numeric_columns)

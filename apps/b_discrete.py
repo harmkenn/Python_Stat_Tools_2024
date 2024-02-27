@@ -10,23 +10,31 @@ from scipy.stats import *
 
 def app():
     # add a select widget to the side bar
-    st.sidebar.subheader("Discrete Probaility")
-    prob_choice = st.sidebar.radio("",["Discrete Probability","Binomial Probability","Geometric Probability","Poisson Probability"])
-    st.markdown('Discrete Probability') 
+    #st.sidebar.subheader("Discrete Probaility")
+    prob_choice = st.radio("",["Discrete Probability","Binomial Probability","Geometric Probability","Poisson Probability"])
+    #st.markdown('Discrete Probability') 
     if prob_choice == "Discrete Probability":
         top = st.columns((1,1,2))
         # bottom = st.columns((1,1))
         with top[0]:
-            #st.subheader("Discrete Probaility")
-            gs_URL = st.session_state.gs_URL 
-            googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-            worksheetName = st.text_input("Sheet Name:","Discrete")
-            URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'  
-            if st.button('Refresh'):
-                df = pd.read_csv(URL)
-                df = df.dropna(axis=1, how="all")  
-            df = pd.read_csv(URL)
-            df = df.dropna(axis=1, how="all")
+            def display_data(file_path, selected_sheet):
+                try:
+                    # Read data from the specified file path and sheet
+                    df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                    
+                except FileNotFoundError:
+                    st.error("File not found. Please check the path and try again.")
+                except (KeyError, ValueError):
+                    st.error(f"Sheet '{selected_sheet}' not found in the file.")
+            # Dropdown menu for sheet selection
+            sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+            st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=1)
+            
+
+            # Button to refresh data
+            if st.button("Refresh Data"):
+                display_data(st.session_state.xlsx, st.session_state.sheet)               
+            df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
             st.dataframe(df)
                            
             global numeric_columns

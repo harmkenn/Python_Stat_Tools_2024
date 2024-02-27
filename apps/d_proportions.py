@@ -7,9 +7,9 @@ import plotly_express as px
 
 def app():
     # title of the app
-    st.markdown("Proportions")
-    st.sidebar.subheader("Proportion Settings")
-    prop_choice = st.sidebar.radio("",["One Proportion","Two Proportions"])
+    #st.markdown("Proportions")
+    #st.sidebar.subheader("Proportion Settings")
+    prop_choice = st.radio("",["One Proportion","Two Proportions"])
     
     if prop_choice == "One Proportion":
         c1,c2,c3 = st.columns(3)

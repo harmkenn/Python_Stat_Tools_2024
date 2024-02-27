@@ -13,22 +13,31 @@ import pingouin as pg
 
 def app():
     # title of the app
-    t_choice = st.sidebar.radio("T-Test Settings",["One Sample Data","One Sample Stats","Paired Sample Data","Two Sample Data","Two Sample Stats"])
+
+    t_choice = st.radio("T-Test Settings",["One Sample Data","One Sample Stats","Paired Sample Data","Two Sample Data","Two Sample Stats"])
     if t_choice == "One Sample Data":
-        
         c1,c2,c3 = st.columns((2,1,2))
         with c1:
-            st.markdown("One Sample Data")
-            gs_URL = st.session_state.gs_URL 
-            googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-            worksheetName = st.text_input("Sheet Name:","Bivariate")
-            URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'
-            if st.button('Refresh'):
-                df = pd.read_csv(URL)
-                df = df.dropna(axis=1, how="all")  
+            
+            #st.markdown("One Sample Data")
+            def display_data(file_path, selected_sheet):
+                try:
+                    # Read data from the specified file path and sheet
+                    df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                    
+                except FileNotFoundError:
+                    st.error("File not found. Please check the path and try again.")
+                except (KeyError, ValueError):
+                    st.error(f"Sheet '{selected_sheet}' not found in the file.")
+            # Dropdown menu for sheet selection
+            sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+            st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=0)
 
-            df = pd.read_csv(URL)
-            df = df.dropna(axis=1, how="all")
+            # Button to refresh data
+            if st.button("Refresh Data"):
+                display_data(st.session_state.xlsx, st.session_state.sheet)               
+            df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
+            
             st.dataframe(df.assign(hack='').set_index('hack')) 
             global numeric_columns
             global non_numeric_columns
@@ -181,21 +190,24 @@ def app():
     if t_choice == "Paired Sample Data":
         c1,c2,c3 = st.columns((2,1,1))
         with c1:
-            st.markdown("Paired Sample Data")
-            gs_URL = st.session_state.gs_URL 
-            googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-            worksheetName = st.text_input("Sheet Name:","Paired")
-            URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'
-            #@st.cache (ttl = 600)
-            def upload_gs(x):
-                out = pd.read_csv(x)
-                return out
+            #st.markdown("Paired Sample Data")
+            def display_data(file_path, selected_sheet):
+                try:
+                    # Read data from the specified file path and sheet
+                    df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                    
+                except FileNotFoundError:
+                    st.error("File not found. Please check the path and try again.")
+                except (KeyError, ValueError):
+                    st.error(f"Sheet '{selected_sheet}' not found in the file.")
+            # Dropdown menu for sheet selection
+            sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+            st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=2)
 
-            df = upload_gs(URL)
-            df = df.dropna(axis=1, how="all")
-            #st.dataframe(df.assign(hack='').set_index('hack')) 
-            #global numeric_columns
-            #global non_numeric_columns
+            # Button to refresh data
+            if st.button("Refresh Data"):
+                display_data(st.session_state.xlsx, st.session_state.sheet)               
+            df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
             numeric_columns = list(df.select_dtypes(['float', 'int']).columns)
             non_numeric_columns = list(df.select_dtypes(['object']).columns)
             non_numeric_columns.append(None)
@@ -207,7 +219,7 @@ def app():
         with c1:
             df['After-Before'] = df[qa]-df[qb]
             quant = 'After-Before'
-            st.dataframe(df.assign(hack='').set_index('hack')) 
+            st.dataframe(df) 
         with c2:
             if cat != None:
                 allcat = list(df[cat].unique())
@@ -288,18 +300,25 @@ def app():
     if t_choice == "Two Sample Data":
         c1,c2,c3 = st.columns((1,1,1))
         with c1:
-            st.markdown("Two Sample Data")
-            gs_URL = st.session_state.gs_URL 
-            googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-            worksheetName = st.text_input("Sheet Name:","Bivariate")
-            URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'
-            #@st.cache (ttl = 600)
-            def upload_gs(x):
-                out = pd.read_csv(x)
-                return out
+            #st.markdown("Two Sample Data")
+            def display_data(file_path, selected_sheet):
+                try:
+                    # Read data from the specified file path and sheet
+                    df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                    
+                except FileNotFoundError:
+                    st.error("File not found. Please check the path and try again.")
+                except (KeyError, ValueError):
+                    st.error(f"Sheet '{selected_sheet}' not found in the file.")
+                # Dropdown menu for sheet selection
+                sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+                st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=0)
+            
 
-            df = upload_gs(URL)
-            df = df.dropna(axis=1, how="all")
+            # Button to refresh data
+            if st.button("Refresh Data"):
+                display_data(st.session_state.xlsx, st.session_state.sheet)               
+            df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
             #st.dataframe(df.assign(hack='').set_index('hack')) 
             #global numeric_columns
             #global non_numeric_columns
@@ -424,7 +443,7 @@ def app():
     if t_choice == "Two Sample Stats":
         c1,c2 = st.columns((2,2))
         with c1:
-            st.markdown("Two Sample Stats")
+            #st.markdown("Two Sample Stats")
             n1 = int(st.text_input("Sample 1 Size (n1):",12))
             xbar1 = float(st.text_input("Sample 1 Mean (x-Bar1):", 3.7))
             s1 = float(st.text_input("Sample 1 Standard Deviation (s1):", 1.2))           
