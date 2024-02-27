@@ -311,8 +311,8 @@ def app():
                 except (KeyError, ValueError):
                     st.error(f"Sheet '{selected_sheet}' not found in the file.")
                 # Dropdown menu for sheet selection
-                sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
-                st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=0)
+            sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+            st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=0)
             
 
             # Button to refresh data

@@ -8,21 +8,28 @@ import numpy as np
 def app():
     # title of the app
     
-    anova_choice = st.sidebar.radio("ANOVA Choice",["Data","Statistics"])
+    anova_choice = st.radio("",["Data","Statistics"])
     
     if anova_choice == "Data":
         c1,c2 = st.columns(2)
         with c1:
-            st.markdown('ANOVA') 
-            gs_URL = st.session_state.gs_URL 
-            googleSheetId = gs_URL.split("spreadsheets/d/")[1].split("/edit")[0]
-            worksheetName = st.text_input("Sheet Name:","Bivariate")
-            URL = f'https://docs.google.com/spreadsheets/d/{googleSheetId}/gviz/tq?tqx=out:csv&sheet={worksheetName}'
-            if st.button('Refresh'):
-                df = pd.read_csv(URL)
-                df = df.dropna(axis=1, how="all")  
-            df = pd.read_csv(URL)
-            df = df.dropna(axis=1, how="all")
+            #st.markdown('ANOVA') 
+            def display_data(file_path, selected_sheet):
+                try:
+                    # Read data from the specified file path and sheet
+                    df = pd.read_excel(file_path, sheet_name=selected_sheet)
+                    
+                except FileNotFoundError:
+                    st.error("File not found. Please check the path and try again.")
+                except (KeyError, ValueError):
+                    st.error(f"Sheet '{selected_sheet}' not found in the file.")
+            # Dropdown menu for sheet selection
+            sheet_names = pd.read_excel(st.session_state.xlsx, sheet_name=None, nrows=0).keys()  # Get sheet names
+            st.session_state.sheet = st.selectbox("Select sheet:", sheet_names, index=5)
+            # Button to refresh data
+            if st.button("Refresh Data"):
+                display_data(st.session_state.xlsx, st.session_state.sheet)               
+            df = pd.read_excel(st.session_state.xlsx, st.session_state.sheet)
             st.dataframe(df.assign(hack='').set_index('hack')) 
             global numeric_columns
             global non_numeric_columns
