@@ -30,8 +30,9 @@ class MultiApp:
 
 
         # Input box for file path
-        st.session_state.xlsx = r"PythonStatsData.xlsx"
+        
         st.session_state.xlsx = st.sidebar.file_uploader("Choose an Excel file", type="xlsx")
+        if st.session_state.xlsx is None: st.session_state.xlsx = r"Default.xlsx"
         #st.session_state.xlsx = st.sidebar.text_input("Enter the path to your .xlsx file:",r"PythonStatsData.xlsx")
         
         st.sidebar.download_button(label="Download Default Excel File", data=open("PythonStatsData.xlsx", "rb").read(), file_name="PythonStatsData.xlsx")
