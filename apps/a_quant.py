@@ -120,5 +120,6 @@ def app():
     with bottom[0]:
         st.write(df.describe().T)
         if cv != None:
-            st.write(df.groupby([cv]).describe())
+            
+            st.dataframe(df.groupby([cv]).describe())
     
